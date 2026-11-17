@@ -1,0 +1,12 @@
+---
+title: "p8105_hw5_zg2627"
+author: "Zimu Guan"
+date: "2026-11-17"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
