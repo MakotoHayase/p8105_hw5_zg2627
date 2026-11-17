@@ -190,3 +190,59 @@ longitudinal_data |>
 
 The spaghetti plot shows distinct longitudinal patterns between the control and experimental groups. In the control group, observations fluctuate over the eight weeks without a clear overall increasing or decreasing trend. In contrast, most subjects in the experimental group exhibit an upward trajectory, with observations generally increasing over time. By the later weeks, observations in the experimental group tend to be higher than those in the control group. Although individual variability is present in both groups, the experimental group demonstrates a more pronounced positive trend, suggesting a possible effect of the experimental intervention.
 
+
+## Problem 3
+
+```{r}
+# Simulate one dataset and perform a one-sample t-test
+sim_t_test = function(mu, n = 30, sigma = 5) {
+
+  # Generate observations from a normal distribution
+  sample_data = rnorm(n, mean = mu, sd = sigma)
+
+  # Test the null hypothesis that the population mean is zero
+  test_result = t.test(sample_data, mu = 0)
+
+  # Extract the estimated mean and p-value
+  broom::tidy(test_result) |>
+    select(estimate, p.value)
+}
+```
+
+```{r, include=FALSE}
+# Verify that the simulation function returns the expected variables
+set.seed(123)
+
+sim_t_test(mu = 0)
+sim_t_test(mu = 3)
+sim_t_test(mu = 6)
+```
+
+```{r}
+# Set a random seed to ensure reproducible simulation results
+set.seed(123)
+
+# Run 5,000 simulations for each true population mean
+simulation_results =
+  tibble(true_mu = 0:6) |>
+  mutate(
+    simulation = map(
+      true_mu,
+      \(mu) map_dfr(
+        1:5000,
+        \(i) sim_t_test(mu = mu)
+      )
+    )
+  ) |>
+
+  # Combine all simulation results into a single dataframe
+  unnest(simulation) |>
+  mutate(
+    reject_null = p.value < 0.05
+  )
+
+# Inspect the simulation results
+dim(simulation_results)
+glimpse(simulation_results)
+head(simulation_results)
+```
