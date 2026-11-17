@@ -71,7 +71,8 @@ birthday_results |>
   theme_minimal()
 ```
 
-The simulation results show that the probability of at least two people sharing a birthday increases as group size increases. With 10 people, the estimated probability is 11.60%, while with 23 people, it reaches 50.67%, exceeding 50% despite the relatively small group size. As the group size increases further, the probability rises to 70.88% for 30 people and 97.10% for 50 people. These findings illustrate the birthday paradox, demonstrating that shared birthdays become likely even in moderately sized groups.
+The simulation results show that the probability of at least two people sharing a birthday increases as group size increases. With 10 people, the estimated probability is `r scales::percent(birthday_results |> filter(group_size == 10) |> pull(probability), accuracy = 0.01)`, while with 23 people, it reaches `r scales::percent(birthday_results |> filter(group_size == 23) |> pull(probability), accuracy = 0.01)`, exceeding 50% despite the relatively small group size. As the group size increases further, the probability rises to `r scales::percent(birthday_results |> filter(group_size == 30) |> pull(probability), accuracy = 0.01)` for 30 people and `r scales::percent(birthday_results |> filter(group_size == 50) |> pull(probability), accuracy = 0.01)` for 50 people. These findings illustrate the birthday paradox, demonstrating that shared birthdays become likely even in moderately sized groups.
+
 
 
 ## Problem 2
@@ -149,7 +150,43 @@ glimpse(longitudinal_data)
 head(longitudinal_data)
 ```
 
+```{r spaghetti_plot, fig.width=10, fig.height=5}
+# Plot individual trajectories over time for each treatment arm
+longitudinal_data |>
+  ggplot(
+    aes(
+      x = week,
+      y = observation,
+      group = subject_id
+    )
+  ) +
+  geom_line(
+    aes(color = subject_id),
+    linewidth = 0.7,
+    alpha = 0.8
+  ) +
+  geom_point(
+    aes(color = subject_id),
+    size = 1.5
+  ) +
 
+  # Display control and experimental groups separately
+  facet_wrap(~ arm) +
 
+  # Customize labels and plot appearance
+  scale_x_continuous(breaks = 1:8) +
+  labs(
+    title = "Individual Trajectories Over Time by Treatment Arm",
+    x = "Week",
+    y = "Observation",
+    color = "Subject ID"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    strip.text = element_text(face = "bold")
+  )
+```
 
+The spaghetti plot shows distinct longitudinal patterns between the control and experimental groups. In the control group, observations fluctuate over the eight weeks without a clear overall increasing or decreasing trend. In contrast, most subjects in the experimental group exhibit an upward trajectory, with observations generally increasing over time. By the later weeks, observations in the experimental group tend to be higher than those in the control group. Although individual variability is present in both groups, the experimental group demonstrates a more pronounced positive trend, suggesting a possible effect of the experimental intervention.
 
